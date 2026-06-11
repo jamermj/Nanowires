@@ -1,0 +1,340 @@
+# Magnetoresistance Analysis Workflow for Nanowire Arrays
+
+## Overview
+
+This repository contains a modular analysis workflow for magnetotransport measurements collected using a Quantum Design PPMS. The notebooks process raw resistance versus magnetic field data, compute magnetoresistance (MR), generate diagnostic plots, and perform both traditional and advanced transport model fitting.
+
+The workflow was developed to analyze nanowire-array samples exhibiting low-field orbital magnetoresistance and high-field linear magnetoresistance.
+
+---
+
+## Workflow Structure
+
+### Notebook 1 — Data Processing
+
+**Purpose:** Convert raw PPMS `.dat` files into processed MR datasets.
+
+### Inputs
+
+* Dataset 1 ZIP archive
+* Dataset 2 ZIP archive
+* Raw PPMS resistance-vs-field measurements
+
+### Processing
+
+For each sample:
+
+[
+MR = \frac{R-R_0}{R_0}
+]
+
+using three definitions:
+
+* **MR+** using (R_{0,+})
+* **MR−** using (R_{0,-})
+* **MR_average** using
+
+[
+R_{0,\mathrm{avg}}
+==================
+
+\frac{R_{0,+}+R_{0,-}}{2}
+]
+
+Additional calculations:
+
+* Smoothed MR curves
+* First derivative (dMR/dB)
+* Second derivative (d^2MR/dB^2)
+
+### Outputs
+
+* `*_MR_derivatives.csv`
+* `R0_summary.csv`
+
+---
+
+### Notebook 2 — Diagnostic Plots
+
+**Purpose:** Visualize MR behavior before fitting.
+
+### Generated Figures
+
+#### MR Comparison
+
+For each sample and temperature:
+
+* MR+
+* MR−
+* MR_average
+
+#### Derivative Analysis
+
+[
+\frac{dMR}{dB}
+]
+
+[
+\frac{d^2MR}{dB^2}
+]
+
+for all samples on common axes.
+
+#### Sample Comparison
+
+At each temperature:
+
+* FL2-F
+* GN2-2
+* FL2C3
+* GN2-3
+
+are plotted together for direct comparison.
+
+---
+
+### Notebook 3 — Traditional Transport Fits
+
+**Purpose:** Extract low-field and high-field transport parameters using standard fitting approaches.
+
+### Low-Field Quadratic Fit
+
+[
+MR
+==
+
+q
++
+aB^2
+]
+
+Parameters:
+
+* (a): mobility-like quadratic coefficient
+* (q): low-field offset
+
+---
+
+### Low-Field Sondheimer Fit
+
+[
+MR
+==
+
+c
++
+\frac{(aB)^2}
+{1+(bB)^2}
+]
+
+Parameters:
+
+* (a): mobility-like parameter
+* (b): crossover parameter
+* (B_c = 1/b)
+* (c): low-field offset
+
+---
+
+### High-Field Linear Fit
+
+[
+MR
+==
+
+mB
+]
+
+or
+
+[
+MR
+==
+
+mB+d
+]
+
+depending on notebook settings.
+
+Parameters:
+
+* (m): linear magnetoresistance slope
+* (d): optional intercept
+
+### Outputs
+
+* Mobility trends
+* Characteristic field (B_c)
+* Linear MR slope
+* Fit quality (R^2)
+
+for:
+
+* MR_average
+* MR+
+* MR−
+
+---
+
+### Notebook 4 — Advanced Piecewise and Global Models
+
+**Purpose:** Explore physically motivated transport models.
+
+---
+
+#### Global Sondheimer + Linear Model
+
+[
+MR
+==
+
+c
++
+\frac{(aB)^2}
+{1+(bB)^2}
++
+mB
+]
+
+Parameters:
+
+* (a)
+* (b)
+* (m)
+* (c)
+
+---
+
+#### Shared-Offset Piecewise Model
+
+Low field:
+
+[
+MR
+==
+
+c
++
+\frac{(aB)^2}
+{1+(bB)^2}
+]
+
+High field:
+
+[
+MR
+==
+
+c
++
+mB
+]
+
+A common offset is enforced between both regions.
+
+---
+
+#### Bc-Defined Piecewise Model
+
+The crossover field
+
+[
+B_c
+===
+
+\frac{1}{b}
+]
+
+is extracted from the Sondheimer fit.
+
+Low field:
+
+[
+B < B_c
+]
+
+is fit using the Sondheimer model.
+
+High field:
+
+[
+B > B_c
+]
+
+is fit using a linear model.
+
+Both shared-offset and two-offset implementations are available.
+
+---
+
+## Sample Naming
+
+### Dataset 1
+
+| Channel | Sample |
+| ------- | ------ |
+| CH2     | FL2-F  |
+| CH3     | GN2-2  |
+
+### Dataset 2
+
+| Channel | Sample |
+| ------- | ------ |
+| CH2     | GN2-3  |
+| CH3     | FL2C3  |
+
+---
+
+## Recommended Analysis Path
+
+1. Run Notebook 1 to generate processed MR datasets.
+2. Run Notebook 2 to inspect raw MR behavior.
+3. Run Notebook 3 to obtain traditional transport parameters.
+4. Run Notebook 4 to compare advanced physical models.
+5. Use Notebook 4 trend plots for publication-quality comparisons.
+
+---
+
+## Typical Output Parameters
+
+### Low-Field Transport
+
+* Quadratic mobility-like coefficient
+* Sondheimer mobility-like coefficient
+* Characteristic field
+
+[
+B_c
+===
+
+\frac{1}{b}
+]
+
+### High-Field Transport
+
+* Linear MR slope
+
+### Model Quality
+
+* Low-field (R^2)
+* High-field (R^2)
+* Global (R^2)
+
+---
+
+## Dependencies
+
+* Python 3.10+
+* NumPy
+* Pandas
+* SciPy
+* Matplotlib
+* Jupyter Notebook / Google Colab
+
+---
+
+## Notes
+
+The Sondheimer model is used here as an empirical parameterization of low-field orbital magnetoresistance. The extracted mobility-like parameters should be interpreted as effective fitting parameters rather than direct carrier mobilities unless independently validated by Hall measurements.
+
+The workflow is designed for comparative analysis between nanowire-array samples and is particularly useful for identifying transitions between low-field orbital magnetoresistance and high-field linear magnetoresistance.
